@@ -2,6 +2,7 @@ base   skillforge
 author Henrik Yllemo
 email  info@aiwiki.se
 date   2026-07-03
+version 1.1.0
 name   SkillForge
 desc   Export DokuWiki namespaces as AI-ready SKILL.md / Markdown ZIP packages.
 url    https://github.com/yllemo/skillforge

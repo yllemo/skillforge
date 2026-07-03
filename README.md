@@ -1,6 +1,6 @@
 # SkillForge for DokuWiki
 
-SkillForge is a DokuWiki plugin that exports an entire namespace as an AI-ready Markdown package.
+**SkillForge** is a powerful DokuWiki plugin that exports entire namespaces as AI-ready Markdown packages.
 
 It creates a downloadable ZIP package with a `SKILL.md` entry file, converted Markdown pages, an `index.md` file, a machine-readable `skill.json` manifest and optional media files.
 
@@ -47,7 +47,7 @@ Admin → SkillForge
 
 ## Configuration
 
-SkillForge settings are available through DokuWiki's configuration manager.
+SkillForge settings are available through DokuWiki's configuration manager. All settings have sensible defaults and work out of the box.
 
 | Setting | Default | Description |
 |---|---:|---|

@@ -2,6 +2,8 @@
 
 ## 1.1.0 - 2026-07-03
 
+**First Public Release**
+
 ### Added
 
 - Formatted DokuWiki rendering for `<frontmatter>` and `<skillmeta>` metadata blocks
@@ -9,6 +11,7 @@
 - Settings to toggle rendered metadata and the page download button
 - Configurable download button label with frontmatter placeholders
 - Plugin stylesheet for the rendered metadata panel
+- GitHub Actions workflow for automated release builds
 
 ## 1.0.0 - 2026-06-25
 
