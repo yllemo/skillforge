@@ -1,0 +1,65 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Extract plugin name and version
+        id: plugin-info
+        run: |
+          BASE=$(grep "^base" plugin.info.txt | cut -d' ' -f2)
+          DATE=$(date +%Y%m%d_%H%M%S)
+          VERSION=$(grep "^date" plugin.info.txt | cut -d' ' -f2)
+          TAG="${BASE}_${VERSION}_${DATE}"
+          echo "base=${BASE}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "Plugin: ${BASE}, Version: ${VERSION}, Tag: ${TAG}"
+      
+      - name: Create plugin package
+        run: |
+          mkdir -p skillforge-package
+          # Copy all plugin files except git-related and excluded files
+          cp -r action.php admin.php helper.php syntax.php plugin.info.txt README.md LICENSE CHANGELOG.md style.css skillforge-package/
+          cp -r classes/ conf/ lang/ skillforge-package/
+          
+          # Create ZIP archive
+          zip -r skillforge-${{ steps.plugin-info.outputs.version }}.zip skillforge-package/
+          ls -lh skillforge-*.zip
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.plugin-info.outputs.tag }}
+          name: SkillForge Release ${{ steps.plugin-info.outputs.version }}
+          body: |
+            ## SkillForge DokuWiki Plugin
+            
+            **Version:** ${{ steps.plugin-info.outputs.version }}
+            **Base:** ${{ steps.plugin-info.outputs.base }}
+            
+            ### Installation
+            
+            1. Download the `skillforge-${{ steps.plugin-info.outputs.version }}.zip` file below
+            2. Extract it in your DokuWiki plugins directory: `lib/plugins/`
+            3. Go to Admin → SkillForge to configure
+            
+            ### What's included
+            - Plugin core files (action.php, admin.php, helper.php, syntax.php)
+            - Configuration templates (conf/)
+            - Language files (lang/)
+            - Documentation (README.md, CHANGELOG.md)
+          files: |
+            skillforge-${{ steps.plugin-info.outputs.version }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
