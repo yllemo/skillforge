@@ -31,11 +31,12 @@ jobs:
           cp -r action.php admin.php helper.php syntax.php plugin.info.txt README.md LICENSE CHANGELOG.md style.css skillforge-package/
           cp -r classes/ conf/ lang/ skillforge-package/
           
-          # Create ZIP archive
-          FILENAME="skillforge-${{ steps.plugin-info.outputs.version }}.zip"
-          zip -r "$FILENAME" skillforge-package/
-          ls -lh "$FILENAME"
-          echo "RELEASE_FILE=$FILENAME" >> $GITHUB_ENV
+          # Create ZIP archive with files at root level
+          cd skillforge-package
+          zip -r "../skillforge-${{ steps.plugin-info.outputs.version }}.zip" .
+          cd ..
+          ls -lh skillforge-*.zip
+          echo "RELEASE_FILE=skillforge-${{ steps.plugin-info.outputs.version }}.zip" >> $GITHUB_ENV
       
       - name: Create Release
         uses: softprops/action-gh-release@v2
