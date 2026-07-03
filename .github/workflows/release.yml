@@ -36,7 +36,9 @@ jobs:
           zip -r "$FILENAME" skillforge-package/
           ls -lh "$FILENAME"
           echo "RELEASE_FILE=$FILENAME" >> $GITHUB_ENV
-      2
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.plugin-info.outputs.tag }}
           name: SkillForge ${{ steps.plugin-info.outputs.version }}
@@ -58,8 +60,6 @@ jobs:
             - Documentation (README.md, CHANGELOG.md)
           files: |
             ${{ env.RELEASE_FILE }}
-          files: |
-            skillforge-${{ steps.plugin-info.outputs.version }}.zip
           draft: false
           prerelease: false
         env:
