@@ -8,6 +8,8 @@ on:
 jobs:
   build-release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - uses: actions/checkout@v4
@@ -15,14 +17,12 @@ jobs:
       - name: Extract plugin name and version
         id: plugin-info
         run: |
-          BASE=$(grep "^base" plugin.info.txt | cut -d' ' -f2)
-          DATE=$(date +%Y%m%d_%H%M%S)
-          VERSION=$(grep "^date" plugin.info.txt | cut -d' ' -f2)
-          TAG="${BASE}_${VERSION}_${DATE}"
-          echo "base=${BASE}" >> $GITHUB_OUTPUT
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          PLUGIN_VERSION=$(grep "^version" plugin.info.txt | cut -d' ' -f2)
+          BUILD_DATE=$(date +%Y%m%d.%H%M%S)
+          TAG="v${PLUGIN_VERSION}-${BUILD_DATE}"
+          echo "version=${PLUGIN_VERSION}" >> $GITHUB_OUTPUT
           echo "tag=${TAG}" >> $GITHUB_OUTPUT
-          echo "Plugin: ${BASE}, Version: ${VERSION}, Tag: ${TAG}"
+          echo "Plugin Version: ${PLUGIN_VERSION}, Tag: ${TAG}"
       
       - name: Create plugin package
         run: |
@@ -32,19 +32,18 @@ jobs:
           cp -r classes/ conf/ lang/ skillforge-package/
           
           # Create ZIP archive
-          zip -r skillforge-${{ steps.plugin-info.outputs.version }}.zip skillforge-package/
-          ls -lh skillforge-*.zip
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
+          FILENAME="skillforge-${{ steps.plugin-info.outputs.version }}.zip"
+          zip -r "$FILENAME" skillforge-package/
+          ls -lh "$FILENAME"
+          echo "RELEASE_FILE=$FILENAME" >> $GITHUB_ENV
+      2
         with:
           tag_name: ${{ steps.plugin-info.outputs.tag }}
-          name: SkillForge Release ${{ steps.plugin-info.outputs.version }}
+          name: SkillForge ${{ steps.plugin-info.outputs.version }}
           body: |
             ## SkillForge DokuWiki Plugin
             
             **Version:** ${{ steps.plugin-info.outputs.version }}
-            **Base:** ${{ steps.plugin-info.outputs.base }}
             
             ### Installation
             
@@ -57,6 +56,8 @@ jobs:
             - Configuration templates (conf/)
             - Language files (lang/)
             - Documentation (README.md, CHANGELOG.md)
+          files: |
+            ${{ env.RELEASE_FILE }}
           files: |
             skillforge-${{ steps.plugin-info.outputs.version }}.zip
           draft: false
